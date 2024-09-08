@@ -1,12 +1,17 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using TradingSolutions.Application.Enums;
 using TradingSolutions.Application.Models;
 using TradingSolutions.Application.Processors;
 using TradingSolutions.Application.Requests;
 
 namespace TradingSolutions.Controllers.V1
 {
+    [ApiVersion("1")]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     public class DepthChartController : ControllerBase
     {
 
@@ -34,10 +39,10 @@ namespace TradingSolutions.Controllers.V1
             return Ok(playerList);
         }
 
-        [HttpGet("backups")]
-        public ActionResult<IEnumerable<Player>> GetBackups(GetPlayerBackupsRequest request)
+        [HttpGet("backups/{position}/{playerNumber}")]
+        public ActionResult<IEnumerable<Player>> GetBackups(int position, int playerNumber)
         {
-            var backups = _playerProcessor.GetBackups(request.Position, request.Player);
+            var backups = _playerProcessor.GetBackups((NhlPositions)position, playerNumber);
             return Ok(backups);
         }
 
