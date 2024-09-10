@@ -12,8 +12,9 @@ namespace TradingSolutions.Application.Repositories
     {
         List<Player> GetPositionDepthChart(NflPosition position);
         void AddPlayer(NflPosition position, Player player, int positionDepth);
-        void MovePlayerPosition(NflPosition position, int currentPositionDepth, int newPositionDepth, Player player);
+        void MovePlayerPosition(NflPosition position, int newPositionDepth, Player player);
         Dictionary<NflPosition, List<Player>> GetFullDepthChart();
+        void RemovePlayer(NflPosition position, Player player);
     }
 
     public class NflDepthChartRepository : INflDepthChartRepository
@@ -42,9 +43,11 @@ namespace TradingSolutions.Application.Repositories
             }
         }
 
-        public void MovePlayerPosition(NflPosition position, int currentPositionDepth, int newPositionDepth, Player player)
+        public void MovePlayerPosition(NflPosition position, int newPositionDepth, Player player)
         {
             var positionChart = GetPositionDepthChartInternal(position);
+
+            var currentPositionDepth = positionChart.IndexOf(player);
             positionChart.RemoveAt(currentPositionDepth);
             if (newPositionDepth == -1)
             {
@@ -56,8 +59,15 @@ namespace TradingSolutions.Application.Repositories
             }
 
         }
+
         public Dictionary<NflPosition, List<Player>> GetFullDepthChart()
             => _depthCharts;
+
+        public void RemovePlayer(NflPosition position, Player player)
+        {
+            var chart = GetPositionDepthChartInternal(position);
+            chart.Remove(player);
+        }
 
         private List<Player> GetPositionDepthChartInternal(NflPosition position)
         {

@@ -1,3 +1,5 @@
+The web api has been configured with swagger and it can be accessed on http://localhost:5254/swagger
+
 How to add more sports?
 - Each sport would have their own controller, processor and repository
 

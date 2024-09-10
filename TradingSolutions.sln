@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{84E300F5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingSolutions.Application", "TradingSolutions.Application\TradingSolutions.Application.csproj", "{814CBAE8-3E73-4EDE-A423-ECD49AD27ABA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSolutions.Tests", "TradingSolutions.Tests\TradingSolutions.Tests.csproj", "{C5EB0259-E068-482A-9AA8-40D38803DE25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingSolutions.Tests", "TradingSolutions.Tests\TradingSolutions.Tests.csproj", "{C5EB0259-E068-482A-9AA8-40D38803DE25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

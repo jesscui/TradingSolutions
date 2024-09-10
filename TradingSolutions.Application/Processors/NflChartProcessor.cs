@@ -17,7 +17,7 @@ namespace TradingSolutions.Application.Processors
         ExecutionResult AddPlayerToDepthChart(AddNflPlayerRequest request);
         IEnumerable<Player> GetBackups(NflPosition position, Player player);
         IDictionary<NflPosition, List<Player>> GetFullDepthChart();
-        IEnumerable<Player> RemovePlayerToDepthChart(NflPosition position, Player player);
+        IEnumerable<Player> RemovePlayerFromDepthChart(NflPosition position, Player player);
     }
 
     public class NflChartProcessor : INflChartProcessor
@@ -79,7 +79,7 @@ namespace TradingSolutions.Application.Processors
                 }
 
                 //move existing player to new position
-                _repository.MovePlayerPosition(request.Position, currentPositionDepth, request.PositionDepth, request.Player);
+                _repository.MovePlayerPosition(request.Position, request.PositionDepth, request.Player);
                 return result;
             }
         }
@@ -106,7 +106,7 @@ namespace TradingSolutions.Application.Processors
         public IDictionary<NflPosition, List<Player>> GetFullDepthChart()
             => _repository.GetFullDepthChart();
 
-        public IEnumerable<Player> RemovePlayerToDepthChart(NflPosition position, Player player)
+        public IEnumerable<Player> RemovePlayerFromDepthChart(NflPosition position, Player player)
         {
             var positionChart = _repository.GetPositionDepthChart(position);
             if (positionChart.Count == 0)
@@ -116,7 +116,7 @@ namespace TradingSolutions.Application.Processors
 
             var playerAtPosition = positionChart.FirstOrDefault(x => x.Number == player.Number);
             if (playerAtPosition == null) return Enumerable.Empty<Player>();
-            positionChart.Remove(playerAtPosition);
+            _repository.RemovePlayer(position, playerAtPosition);
             return new List<Player> { playerAtPosition };
         }
     }
