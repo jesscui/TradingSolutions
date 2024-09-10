@@ -16,9 +16,7 @@ namespace TradingSolutions.Application.Enums
         RG,
         RT,
         TE,
-        //TE,
         QB,
         RB
-
     }
 }

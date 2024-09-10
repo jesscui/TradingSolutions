@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TradingSolutions.Application.Enums;
 using TradingSolutions.Application.Models;
 using TradingSolutions.Application.Processors;
-using TradingSolutions.Application.Requests;
+using TradingSolutions.Application.Requests.Nfl;
 
 namespace TradingSolutions.Controllers.V1
 {
@@ -12,20 +12,20 @@ namespace TradingSolutions.Controllers.V1
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public class DepthChartController : ControllerBase
+    public class NflDepthChartController : ControllerBase
     {
 
-        private readonly ILogger<DepthChartController> _logger;
-        private readonly IPlayerProcessor _playerProcessor;
+        private readonly ILogger<NflDepthChartController> _logger;
+        private readonly INflChartProcessor _playerProcessor;
 
-        public DepthChartController(IPlayerProcessor processor, ILogger<DepthChartController> logger)
+        public NflDepthChartController(INflChartProcessor processor, ILogger<NflDepthChartController> logger)
         {
             _logger = logger;
             _playerProcessor = processor;
         }
 
         [HttpPut]
-        public ActionResult AddPlayerToDepthChart([FromBody] AddPlayerRequest request)
+        public ActionResult AddPlayerToDepthChart([FromBody] AddNflPlayerRequest request)
         {
             var result = _playerProcessor.AddPlayerToDepthChart(request);
             if (!result.IsValid)
@@ -36,14 +36,14 @@ namespace TradingSolutions.Controllers.V1
         }
 
         [HttpPut("Position/{position}")]
-        public ActionResult AddPlayersToDepthChart(NflPosition position, [FromBody] IEnumerable<AddPlayerRequest> players)
+        public ActionResult AddPlayersToDepthChart(NflPosition position, [FromBody] IEnumerable<AddNflPlayerRequest> players)
         {
             _playerProcessor.AddPlayersToDepthChart(position, players);
             return Ok();
         }
 
         [HttpDelete]
-        public ActionResult<IEnumerable<Player>> RemovePlayerFromDepthChart([FromBody] RemovePlayerRequest request)
+        public ActionResult<IEnumerable<Player>> RemovePlayerFromDepthChart([FromBody] RemoveNflPlayerRequest request)
         {
             var playerList = _playerProcessor.RemovePlayerToDepthChart(request.Position, request.Player);
             return Ok(playerList);

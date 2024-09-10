@@ -6,31 +6,31 @@ using System.Threading.Tasks;
 using TradingSolutions.Application.Enums;
 using TradingSolutions.Application.Models;
 using TradingSolutions.Application.Repositories;
-using TradingSolutions.Application.Requests;
+using TradingSolutions.Application.Requests.Nfl;
 
 namespace TradingSolutions.Application.Processors
 {
-    public interface IPlayerProcessor
+    public interface INflChartProcessor
     {
         //todo concurrent dictionary
-        void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddPlayerRequest> players);
-        ExecutionResult AddPlayerToDepthChart(AddPlayerRequest request);
+        void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddNflPlayerRequest> players);
+        ExecutionResult AddPlayerToDepthChart(AddNflPlayerRequest request);
         IEnumerable<Player> GetBackups(NflPosition position, Player player);
         IDictionary<NflPosition, List<Player>> GetFullDepthChart();
         IEnumerable<Player> RemovePlayerToDepthChart(NflPosition position, Player player);
     }
 
-    public class PlayerProcessor : IPlayerProcessor
+    public class NflChartProcessor : INflChartProcessor
     {
-        private readonly IDepthChartRepository _repository;
+        private readonly INflDepthChartRepository _repository;
 
-        public PlayerProcessor(IDepthChartRepository repository)
+        public NflChartProcessor(INflDepthChartRepository repository)
         {
             _repository = repository;
 
         }
 
-        public void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddPlayerRequest> request)
+        public void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddNflPlayerRequest> request)
         {
             foreach (var player in request)
             {
@@ -38,7 +38,7 @@ namespace TradingSolutions.Application.Processors
             }
         }
 
-        public ExecutionResult AddPlayerToDepthChart(AddPlayerRequest request)
+        public ExecutionResult AddPlayerToDepthChart(AddNflPlayerRequest request)
         {
             var result = new ExecutionResult
             {

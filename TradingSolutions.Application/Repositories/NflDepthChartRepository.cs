@@ -8,7 +8,7 @@ using TradingSolutions.Application.Models;
 
 namespace TradingSolutions.Application.Repositories
 {
-    public interface IDepthChartRepository
+    public interface INflDepthChartRepository
     {
         List<Player> GetPositionDepthChart(NflPosition position);
         void AddPlayer(NflPosition position, Player player, int positionDepth);
@@ -16,11 +16,11 @@ namespace TradingSolutions.Application.Repositories
         Dictionary<NflPosition, List<Player>> GetFullDepthChart();
     }
 
-    public class DepthChartRepository : IDepthChartRepository
+    public class NflDepthChartRepository : INflDepthChartRepository
     {
-        // To add all other NFL teams - add a tuple key of (string Team, string Position)
-        // private readonly Dictionary<(string, string), List<Player>> _depthCharts = [];
-        // would've implemented this however that requires all the methods to accept an extra parameter of "string team",
+        // To add all other NFL teams - add a tuple key of (enum Team, enum Position)
+        // eg. private readonly Dictionary<(enum, enum), List<Player>> _depthCharts = [];
+        // would've implemented this however that requires all the methods to accept an extra argument of team,
         // eg. getBackups("Buccaneers", "QB", KyleTrask) instead of getBackups("QB", KyleTrask) 
 
         private readonly Dictionary<NflPosition, List<Player>> _depthCharts = [];

@@ -7,8 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddTransient<IPlayerProcessor, PlayerProcessor>(); //todo check this lifetime
-builder.Services.AddSingleton<IDepthChartRepository, DepthChartRepository>();
+builder.Services.AddTransient<INflChartProcessor, NflChartProcessor>(); //todo check this lifetime
+builder.Services.AddSingleton<INflDepthChartRepository, NflDepthChartRepository>();
 builder.Services.AddControllers();
 builder.Services.AddApiVersioning(options =>
 {

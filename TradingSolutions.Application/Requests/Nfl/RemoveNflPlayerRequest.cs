@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using TradingSolutions.Application.Enums;
 using TradingSolutions.Application.Models;
 
-namespace TradingSolutions.Application.Requests
+namespace TradingSolutions.Application.Requests.Nfl
 {
-    public class RemovePlayerRequest
+    public class RemoveNflPlayerRequest
     {
         public NflPosition Position { get; set; }
         public Player Player { get; set; }
