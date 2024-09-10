@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSolutions", "TradingSolutions\TradingSolutions.csproj", "{0F1BFDD1-ADB4-4B41-9D25-D9D19DFCE41A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingSolutions", "TradingSolutions\TradingSolutions.csproj", "{0F1BFDD1-ADB4-4B41-9D25-D9D19DFCE41A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EA26DDB8-68F9-4EF4-8692-5424FA255E5E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{84E300F5-B5EF-4BA8-975D-7D7990E072D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSolutions.Application", "TradingSolutions.Application\TradingSolutions.Application.csproj", "{814CBAE8-3E73-4EDE-A423-ECD49AD27ABA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingSolutions.Application", "TradingSolutions.Application\TradingSolutions.Application.csproj", "{814CBAE8-3E73-4EDE-A423-ECD49AD27ABA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSolutions.Tests", "TradingSolutions.Tests\TradingSolutions.Tests.csproj", "{C5EB0259-E068-482A-9AA8-40D38803DE25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{814CBAE8-3E73-4EDE-A423-ECD49AD27ABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{814CBAE8-3E73-4EDE-A423-ECD49AD27ABA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{814CBAE8-3E73-4EDE-A423-ECD49AD27ABA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5EB0259-E068-482A-9AA8-40D38803DE25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5EB0259-E068-482A-9AA8-40D38803DE25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5EB0259-E068-482A-9AA8-40D38803DE25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5EB0259-E068-482A-9AA8-40D38803DE25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0F1BFDD1-ADB4-4B41-9D25-D9D19DFCE41A} = {EA26DDB8-68F9-4EF4-8692-5424FA255E5E}
 		{814CBAE8-3E73-4EDE-A423-ECD49AD27ABA} = {EA26DDB8-68F9-4EF4-8692-5424FA255E5E}
+		{C5EB0259-E068-482A-9AA8-40D38803DE25} = {84E300F5-B5EF-4BA8-975D-7D7990E072D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E27A7179-E6A7-4E4F-B7B9-5CFFF728D65F}

@@ -1,11 +1,13 @@
 using Asp.Versioning;
 using TradingSolutions.Application.Processors;
+using TradingSolutions.Application.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddSingleton<IPlayerProcessor, PlayerProcessor>(); //todo check this lifetime
+builder.Services.AddTransient<IPlayerProcessor, PlayerProcessor>(); //todo check this lifetime
+builder.Services.AddSingleton<IDepthChartRepository, DepthChartRepository>();
 builder.Services.AddControllers();
 builder.Services.AddApiVersioning(options =>
 {

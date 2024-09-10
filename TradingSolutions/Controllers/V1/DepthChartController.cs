@@ -27,7 +27,7 @@ namespace TradingSolutions.Controllers.V1
         [HttpPut]
         public ActionResult AddPlayerToDepthChart([FromBody] AddPlayerRequest request)
         {
-            var result = _playerProcessor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
+            var result = _playerProcessor.AddPlayerToDepthChart(request);
             if (!result.IsValid)
             {
                 return BadRequest(result.ErrorDetails);

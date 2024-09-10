@@ -12,6 +12,6 @@ namespace TradingSolutions.Application.Requests
     {
         public NhlPositions Position { get; set; }
         public Player Player { get; set; }
-        public int PositionDepth { get; set; }
+        public int PositionDepth { get; set; } = -1;
     }
 }
