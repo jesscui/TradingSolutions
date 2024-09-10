@@ -36,7 +36,7 @@ namespace TradingSolutions.Controllers.V1
         }
 
         [HttpPut("Position/{position}")]
-        public ActionResult AddPlayersToDepthChart(NhlPositions position, [FromBody] IEnumerable<AddPlayerRequest> players)
+        public ActionResult AddPlayersToDepthChart(NflPosition position, [FromBody] IEnumerable<AddPlayerRequest> players)
         {
             _playerProcessor.AddPlayersToDepthChart(position, players);
             return Ok();
@@ -58,12 +58,12 @@ namespace TradingSolutions.Controllers.V1
                 Name = playerName,
                 Number = playerNumber
             };
-            var backups = _playerProcessor.GetBackups((NhlPositions)position, player);
+            var backups = _playerProcessor.GetBackups((NflPosition)position, player);
             return Ok(backups);
         }
 
         [HttpGet]
-        public IDictionary<NhlPositions, List<Player>> GetFullDepthChart()
+        public IDictionary<NflPosition, List<Player>> GetFullDepthChart()
         {
             var depthChart = _playerProcessor.GetFullDepthChart();
             return depthChart;

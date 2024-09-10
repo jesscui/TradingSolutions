@@ -10,20 +10,25 @@ namespace TradingSolutions.Application.Repositories
 {
     public interface IDepthChartRepository
     {
-        List<Player> GetPositionDepthChart(NhlPositions position);
-        void AddPlayer(NhlPositions position, Player player, int positionDepth);
-        void MovePlayerPosition(NhlPositions position, int currentPositionDepth, int newPositionDepth, Player player);
-        Dictionary<NhlPositions, List<Player>> GetFullDepthChart();
+        List<Player> GetPositionDepthChart(NflPosition position);
+        void AddPlayer(NflPosition position, Player player, int positionDepth);
+        void MovePlayerPosition(NflPosition position, int currentPositionDepth, int newPositionDepth, Player player);
+        Dictionary<NflPosition, List<Player>> GetFullDepthChart();
     }
 
     public class DepthChartRepository : IDepthChartRepository
     {
-        private readonly Dictionary<NhlPositions, List<Player>> _depthCharts = [];
+        // To add all other NFL teams - add a tuple key of (string Team, string Position)
+        // private readonly Dictionary<(string, string), List<Player>> _depthCharts = [];
+        // would've implemented this however that requires all the methods to accept an extra parameter of "string team",
+        // eg. getBackups("Buccaneers", "QB", KyleTrask) instead of getBackups("QB", KyleTrask) 
 
-        public List<Player> GetPositionDepthChart(NhlPositions position)
+        private readonly Dictionary<NflPosition, List<Player>> _depthCharts = [];
+
+        public List<Player> GetPositionDepthChart(NflPosition position)
             => GetPositionDepthChartInternal(position);
 
-        public void AddPlayer(NhlPositions position, Player player, int newPositionDepth)
+        public void AddPlayer(NflPosition position, Player player, int newPositionDepth)
         {
             var positionChart = GetPositionDepthChartInternal(position);
 
@@ -37,7 +42,7 @@ namespace TradingSolutions.Application.Repositories
             }
         }
 
-        public void MovePlayerPosition(NhlPositions position, int currentPositionDepth, int newPositionDepth, Player player)
+        public void MovePlayerPosition(NflPosition position, int currentPositionDepth, int newPositionDepth, Player player)
         {
             var positionChart = GetPositionDepthChartInternal(position);
             positionChart.RemoveAt(currentPositionDepth);
@@ -51,10 +56,10 @@ namespace TradingSolutions.Application.Repositories
             }
 
         }
-        public Dictionary<NhlPositions, List<Player>> GetFullDepthChart()
+        public Dictionary<NflPosition, List<Player>> GetFullDepthChart()
             => _depthCharts;
 
-        private List<Player> GetPositionDepthChartInternal(NhlPositions position)
+        private List<Player> GetPositionDepthChartInternal(NflPosition position)
         {
             if (!_depthCharts.TryGetValue(position, out var positionChart))
             {

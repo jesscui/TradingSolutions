@@ -13,11 +13,11 @@ namespace TradingSolutions.Application.Processors
     public interface IPlayerProcessor
     {
         //todo concurrent dictionary
-        void AddPlayersToDepthChart(NhlPositions position, IEnumerable<AddPlayerRequest> players);
+        void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddPlayerRequest> players);
         ExecutionResult AddPlayerToDepthChart(AddPlayerRequest request);
-        IEnumerable<Player> GetBackups(NhlPositions position, Player player);
-        IDictionary<NhlPositions, List<Player>> GetFullDepthChart();
-        IEnumerable<Player> RemovePlayerToDepthChart(NhlPositions position, Player player);
+        IEnumerable<Player> GetBackups(NflPosition position, Player player);
+        IDictionary<NflPosition, List<Player>> GetFullDepthChart();
+        IEnumerable<Player> RemovePlayerToDepthChart(NflPosition position, Player player);
     }
 
     public class PlayerProcessor : IPlayerProcessor
@@ -30,7 +30,7 @@ namespace TradingSolutions.Application.Processors
 
         }
 
-        public void AddPlayersToDepthChart(NhlPositions position, IEnumerable<AddPlayerRequest> request)
+        public void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddPlayerRequest> request)
         {
             foreach (var player in request)
             {
@@ -84,7 +84,7 @@ namespace TradingSolutions.Application.Processors
             }
         }
 
-        public IEnumerable<Player> GetBackups(NhlPositions position, Player player)
+        public IEnumerable<Player> GetBackups(NflPosition position, Player player)
         {
             var positionChart = _repository.GetPositionDepthChart(position);
 
@@ -103,10 +103,10 @@ namespace TradingSolutions.Application.Processors
             return backups;
         }
 
-        public IDictionary<NhlPositions, List<Player>> GetFullDepthChart()
+        public IDictionary<NflPosition, List<Player>> GetFullDepthChart()
             => _repository.GetFullDepthChart();
 
-        public IEnumerable<Player> RemovePlayerToDepthChart(NhlPositions position, Player player)
+        public IEnumerable<Player> RemovePlayerToDepthChart(NflPosition position, Player player)
         {
             var positionChart = _repository.GetPositionDepthChart(position);
             if (positionChart.Count == 0)

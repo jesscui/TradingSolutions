@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TradingSolutions.Application.Enums
 {
-    public enum NhlPositions
+    public enum NflPosition
     {
         LWR,
         RWR,

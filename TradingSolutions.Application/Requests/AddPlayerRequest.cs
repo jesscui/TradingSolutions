@@ -10,7 +10,7 @@ namespace TradingSolutions.Application.Requests
 {
     public class AddPlayerRequest
     {
-        public NhlPositions Position { get; set; }
+        public NflPosition Position { get; set; }
         public Player Player { get; set; }
         public int PositionDepth { get; set; } = -1;
     }
