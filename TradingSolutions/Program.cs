@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using TradingSolutions;
 using TradingSolutions.Application.Processors;
 using TradingSolutions.Application.Repositories;
 
@@ -30,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionMiddlewareFilter>();
 app.UseAuthorization();
 
 app.MapControllers();
