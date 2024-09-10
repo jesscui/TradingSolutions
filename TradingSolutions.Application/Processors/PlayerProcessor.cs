@@ -5,48 +5,109 @@ using System.Text;
 using System.Threading.Tasks;
 using TradingSolutions.Application.Enums;
 using TradingSolutions.Application.Models;
+using TradingSolutions.Application.Requests;
 
 namespace TradingSolutions.Application.Processors
 {
     public interface IPlayerProcessor
     {
-
-        //todo - async?
-        void AddPlayerToDepthChart(NhlPositions position, Player player, int positionDepth = -1);
+        //todo concurrent dictionary
+        void AddPlayersToDepthChart(NhlPositions position, IEnumerable<AddPlayerRequest> players);
+        ExecutionResult AddPlayerToDepthChart(NhlPositions position, Player player, int positionDepth = -1);
         IEnumerable<Player> GetBackups(NhlPositions position, Player player);
-        string GetFullDepthChart();
+        IDictionary<NhlPositions, List<Player>> GetFullDepthChart();
         IEnumerable<Player> RemovePlayerToDepthChart(NhlPositions position, Player player);
     }
 
-    //todo - add git
     public class PlayerProcessor : IPlayerProcessor
     {
-        //list, linkedlist, sorted list
-        SortedList<int, Player> _players;
-        private IDictionary<NhlPositions, List<Player>> _depthChart = new Dictionary<NhlPositions, List<Player>>();
-        //private IList<Player> _depthChart = new List<Player>();
+        private readonly Dictionary<NhlPositions, List<Player>> _depthChart = [];
 
-        public void AddPlayerToDepthChart(NhlPositions position, Player player, int positionDepth = -1)
+        public void AddPlayersToDepthChart(NhlPositions position, IEnumerable<AddPlayerRequest> request)
         {
-            var positionChart = _depthChart[position];
-            if (positionDepth == -1)
+            var result = new ExecutionResult();
+            if (!_depthChart.TryGetValue(position, out var positionChart))
             {
-                //check if posiition chart can be null
-                positionChart.Add(player);
-                return;
+                positionChart = [];
+            }
+            foreach (var player in request)
+            {
+                positionChart.Insert(player.PositionDepth, player.Player);
+
+            }
+            _depthChart[position] = positionChart;
+        }
+
+        public ExecutionResult AddPlayerToDepthChart(NhlPositions position, Player player, int newPositionDepth = -1)
+        {
+            var result = new ExecutionResult();
+            if (!_depthChart.TryGetValue(position, out var positionChart))
+            {
+                positionChart = [];
             }
 
-            positionChart.Insert(positionDepth, player);
+            var currentPositionDepth = positionChart.FindIndex(x => x.Number == player.Number);
+
+            // doesn't exist - insert normally
+            if (currentPositionDepth == -1)
+            {
+                if (newPositionDepth > positionChart.Count)
+                {
+                    result.IsValid = false;
+                    result.ErrorDetails = [$"New position depth '{newPositionDepth}' exceeds current position chart depth '{positionChart.Count}'"];
+                    return result;
+                }
+                if (newPositionDepth == -1)
+                {
+                    positionChart.Add(player);
+                }
+                else
+                {
+                    positionChart.Insert(newPositionDepth, player);
+                }
+                _depthChart[position] = positionChart;
+                result.IsSuccess = true;
+                result.IsValid = true;
+                return result;
+            }
+            else
+            {
+                // updating to current position - do nothing;
+                if (currentPositionDepth == newPositionDepth)
+                {
+                    result.IsSuccess = true;
+                    result.IsValid = true;
+                    return result;
+                }
+
+                //move existing player to new position
+                if (newPositionDepth >= positionChart.Count)
+                {
+                    result.IsValid = false;
+                    result.ErrorDetails = [$"Player number '{player.Number}' already exists at position '{currentPositionDepth}'. Cannot move to '{newPositionDepth}' as it would exceed current position chart depth '{positionChart.Count - 1}'"];
+                    return result;
+                }
+                positionChart.RemoveAt(currentPositionDepth);
+                positionChart.Insert(newPositionDepth, player);
+                result.IsSuccess = true;
+                result.IsValid = true;
+                return result;
+            }
         }
 
         public IEnumerable<Player> GetBackups(NhlPositions position, Player player)
         {
-            var positionChart = _depthChart[position];
-            if (!positionChart.Contains(player)) return Enumerable.Empty<Player>();
-            if (positionChart.Last() == player) return Enumerable.Empty<Player>();
+            if (!_depthChart.TryGetValue(position, out var positionChart))
+            {
+                return Enumerable.Empty<Player>();
+            }
+            var playerAtPosition = positionChart.FirstOrDefault(x => x.Number == player.Number);
+            if (playerAtPosition == null) return Enumerable.Empty<Player>();
+            if (positionChart.Last().Number == playerAtPosition.Number) return Enumerable.Empty<Player>();
+
             var backups = new List<Player>();
 
-            var currentPlayerPositionDepth = positionChart.IndexOf(player);
+            var currentPlayerPositionDepth = positionChart.FindIndex(x => x.Number == player.Number);
 
             for (int i = currentPlayerPositionDepth + 1; i < positionChart.Count; i++)
             {
@@ -55,28 +116,20 @@ namespace TradingSolutions.Application.Processors
             return backups;
         }
 
-        public string GetFullDepthChart()
-        {
-            string x = "";
-            foreach (var key in _depthChart.Keys)
-            {
-                x.Concat(key.ToString() + " - ");
-                foreach (Player player in _depthChart[key])
-                {
-                    var formattedPlayerDetails = $"(#{player.Number}, {player.Name}),";
-                    x.Concat(formattedPlayerDetails);
-                }
-                x.Concat("\n");
-            }
-            return x;
-        }
+        public IDictionary<NhlPositions, List<Player>> GetFullDepthChart()
+            => _depthChart;
 
         public IEnumerable<Player> RemovePlayerToDepthChart(NhlPositions position, Player player)
         {
-            var positionChart = _depthChart[position];
-            if (!positionChart.Contains(player)) return Enumerable.Empty<Player>();
-            positionChart.Remove(player);
-            return new List<Player> { player };
+            if (!_depthChart.TryGetValue(position, out var positionChart))
+            {
+                return Enumerable.Empty<Player>();
+            }
+
+            var playerAtPosition = positionChart.FirstOrDefault(x => x.Number == player.Number);
+            if (playerAtPosition == null) return Enumerable.Empty<Player>();
+            positionChart.Remove(playerAtPosition);
+            return new List<Player> { playerAtPosition };
         }
     }
 }

@@ -25,29 +25,45 @@ namespace TradingSolutions.Controllers.V1
         }
 
         [HttpPut]
-        //todo from body
-        public ActionResult AddPlayerToDepthChart(AddPlayerRequest request)
+        public ActionResult AddPlayerToDepthChart([FromBody] AddPlayerRequest request)
         {
-            _playerProcessor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
+            var result = _playerProcessor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
+            if (!result.IsValid)
+            {
+                return BadRequest(result.ErrorDetails);
+            }
+            return Ok();
+        }
+
+        [HttpPut("Position/{position}")]
+        public ActionResult AddPlayersToDepthChart(NhlPositions position, [FromBody] IEnumerable<AddPlayerRequest> players)
+        {
+            _playerProcessor.AddPlayersToDepthChart(position, players);
             return Ok();
         }
 
         [HttpDelete]
-        public ActionResult<IEnumerable<Player>> RemovePlayerToDepthChart(RemovePlayerRequest request)
+        public ActionResult<IEnumerable<Player>> RemovePlayerFromDepthChart([FromBody] RemovePlayerRequest request)
         {
             var playerList = _playerProcessor.RemovePlayerToDepthChart(request.Position, request.Player);
             return Ok(playerList);
         }
 
-        [HttpGet("backups/{position}/{playerNumber}")]
-        public ActionResult<IEnumerable<Player>> GetBackups(int position, int playerNumber)
+        [HttpGet("backups/position/{position}")]
+        public ActionResult<IEnumerable<Player>> GetBackups(int position, [FromQuery] int playerNumber, [FromQuery] string playerName)
         {
-            var backups = _playerProcessor.GetBackups((NhlPositions)position, playerNumber);
+            if (string.IsNullOrEmpty(playerName) || playerNumber < 0) return BadRequest();
+            var player = new Player
+            {
+                Name = playerName,
+                Number = playerNumber
+            };
+            var backups = _playerProcessor.GetBackups((NhlPositions)position, player);
             return Ok(backups);
         }
 
         [HttpGet]
-        public string GetFullDepthChart()
+        public IDictionary<NhlPositions, List<Player>> GetFullDepthChart()
         {
             var depthChart = _playerProcessor.GetFullDepthChart();
             return depthChart;

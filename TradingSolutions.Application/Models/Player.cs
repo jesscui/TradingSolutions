@@ -8,8 +8,7 @@ namespace TradingSolutions.Application.Models
 {
     public class Player
     {
-        public string Number { get; set; }
+        public int Number { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
     }
 }
