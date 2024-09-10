@@ -1,0 +1,5 @@
+How to add more sports?
+- Each sport would have their own controller, processor and repository
+
+How to add all NFL teams?
+- The Nfl repository is currently keyed by <enum position> however if the teams were included, it would be keyed by a tuple of <(enum team, enum position)>. This was not implemented as it would require the method signatures to be altered and accept another parameter of team
