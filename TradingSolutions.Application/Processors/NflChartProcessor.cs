@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +14,6 @@ namespace TradingSolutions.Application.Processors
 {
     public interface INflChartProcessor
     {
-        void AddPlayersToDepthChart(string position, IEnumerable<AddNflPlayerRequest> players);
         ExecutionResult AddPlayerToDepthChart(string position, Player player, int positionDepth);
         IEnumerable<Player> GetBackups(string position, Player player);
         IDictionary<string, List<Player>> GetFullDepthChart();
@@ -22,19 +23,12 @@ namespace TradingSolutions.Application.Processors
     public class NflChartProcessor : INflChartProcessor
     {
         private readonly INflDepthChartRepository _repository;
+        private readonly ILogger<NflChartProcessor> _logger;
 
-        public NflChartProcessor(INflDepthChartRepository repository)
+        public NflChartProcessor(INflDepthChartRepository repository, ILogger<NflChartProcessor> logger)
         {
             _repository = repository;
-
-        }
-
-        public void AddPlayersToDepthChart(string position, IEnumerable<AddNflPlayerRequest> request)
-        {
-            foreach (var player in request)
-            {
-                _repository.AddPlayer(position, player.Player, player.PositionDepth);
-            }
+            _logger = logger ?? NullLogger<NflChartProcessor>.Instance;
         }
 
         public ExecutionResult AddPlayerToDepthChart(string position, Player player, int positionDepth)

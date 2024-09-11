@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using TradingSolutions.Application.Enums;
 using TradingSolutions.Application.Models;
+using TradingSolutions.Application.Processors;
 
 namespace TradingSolutions.Application.Repositories
 {
@@ -25,6 +28,11 @@ namespace TradingSolutions.Application.Repositories
         // would've implemented this however that requires all the methods to accept an extra argument of team,
         // eg. getBackups("Buccaneers", "QB", KyleTrask) instead of getBackups("QB", KyleTrask) 
         private readonly ConcurrentDictionary<string, List<Player>> _depthCharts = [];
+        private readonly ILogger<NflDepthChartRepository> _logger;
+        public NflDepthChartRepository(ILogger<NflDepthChartRepository> logger)
+        {
+            _logger = logger;
+        }
 
         public List<Player> GetPositionDepthChart(string position)
             => GetPositionDepthChartInternal(position);
@@ -36,10 +44,12 @@ namespace TradingSolutions.Application.Repositories
             if (newPositionDepth < 0)
             {
                 positionChart.Add(player);
+                _logger.LogInformation("Added player '{PlayerNumber}' to the end of the chart", player.Number);
             }
             else
             {
                 positionChart.Insert(newPositionDepth, player);
+                _logger.LogInformation("Added player '{PlayerNumber}' at index '{PositionDepth}' of the chart", player.Number, newPositionDepth);
             }
         }
 
@@ -56,12 +66,13 @@ namespace TradingSolutions.Application.Repositories
             if (newPositionDepth < 0)
             {
                 positionChart.Add(player);
+                _logger.LogInformation("Added player '{PlayerNumber}' to the end of the chart", player.Number);
             }
             else
             {
                 positionChart.Insert(newPositionDepth, player);
+                _logger.LogInformation("Added player '{PlayerNumber}' at index '{PositionDepth}' of the chart", player.Number, newPositionDepth);
             }
-
         }
 
         public ConcurrentDictionary<string, List<Player>> GetFullDepthChart()
