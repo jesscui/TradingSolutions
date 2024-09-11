@@ -12,12 +12,11 @@ namespace TradingSolutions.Application.Processors
 {
     public interface INflChartProcessor
     {
-        //todo concurrent dictionary
-        void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddNflPlayerRequest> players);
-        ExecutionResult AddPlayerToDepthChart(AddNflPlayerRequest request);
-        IEnumerable<Player> GetBackups(NflPosition position, Player player);
-        IDictionary<NflPosition, List<Player>> GetFullDepthChart();
-        IEnumerable<Player> RemovePlayerFromDepthChart(NflPosition position, Player player);
+        void AddPlayersToDepthChart(string position, IEnumerable<AddNflPlayerRequest> players);
+        ExecutionResult AddPlayerToDepthChart(string position, Player player, int positionDepth);
+        IEnumerable<Player> GetBackups(string position, Player player);
+        IDictionary<string, List<Player>> GetFullDepthChart();
+        IEnumerable<Player> RemovePlayerFromDepthChart(string position, Player player);
     }
 
     public class NflChartProcessor : INflChartProcessor
@@ -30,7 +29,7 @@ namespace TradingSolutions.Application.Processors
 
         }
 
-        public void AddPlayersToDepthChart(NflPosition position, IEnumerable<AddNflPlayerRequest> request)
+        public void AddPlayersToDepthChart(string position, IEnumerable<AddNflPlayerRequest> request)
         {
             foreach (var player in request)
             {
@@ -38,53 +37,53 @@ namespace TradingSolutions.Application.Processors
             }
         }
 
-        public ExecutionResult AddPlayerToDepthChart(AddNflPlayerRequest request)
+        public ExecutionResult AddPlayerToDepthChart(string position, Player player, int positionDepth)
         {
             var result = new ExecutionResult
             {
                 IsSuccess = true,
                 IsValid = true
             };
-            var positionChart = _repository.GetPositionDepthChart(request.Position);
+            var positionChart = _repository.GetPositionDepthChart(position);
 
-            var currentPositionDepth = positionChart.FindIndex(x => x.Number == request.Player.Number);
+            var currentPositionDepth = positionChart.FindIndex(x => x.Number == player.Number);
 
             // doesn't exist - insert normally
             if (currentPositionDepth == -1)
             {
-                if (request.PositionDepth > positionChart.Count)
+                if (positionDepth > positionChart.Count)
                 {
                     result.IsSuccess = false;
                     result.IsValid = false;
-                    result.ErrorDetails = [$"New position depth '{request.PositionDepth}' exceeds current position chart depth '{positionChart.Count}'"];
+                    result.ErrorDetails = [$"New position depth '{positionDepth}' exceeds current position chart depth '{positionChart.Count}'"];
                     return result;
                 }
-                _repository.AddPlayer(request.Position, request.Player, request.PositionDepth);
+                _repository.AddPlayer(position, player, positionDepth);
                 return result;
             }
             else
             {
                 // updating to current position - do nothing;
-                if (currentPositionDepth == request.PositionDepth)
+                if (currentPositionDepth == positionDepth)
                 {
                     return result;
                 }
 
-                if (request.PositionDepth >= positionChart.Count)
+                if (positionDepth >= positionChart.Count)
                 {
                     result.IsSuccess = false;
                     result.IsValid = false;
-                    result.ErrorDetails = [$"Player number '{request.Player.Number}' already exists at position '{currentPositionDepth}'. Cannot move to '{request.PositionDepth}' as it would exceed current position chart depth '{positionChart.Count - 1}'"];
+                    result.ErrorDetails = [$"Player number '{player.Number}' already exists at position '{currentPositionDepth}'. Cannot move to '{positionDepth}' as it would exceed current position chart depth '{positionChart.Count - 1}'"];
                     return result;
                 }
 
                 //move existing player to new position
-                _repository.MovePlayerPosition(request.Position, request.PositionDepth, request.Player);
+                _repository.MovePlayerPosition(position, positionDepth, player);
                 return result;
             }
         }
 
-        public IEnumerable<Player> GetBackups(NflPosition position, Player player)
+        public IEnumerable<Player> GetBackups(string position, Player player)
         {
             var positionChart = _repository.GetPositionDepthChart(position);
 
@@ -103,10 +102,10 @@ namespace TradingSolutions.Application.Processors
             return backups;
         }
 
-        public IDictionary<NflPosition, List<Player>> GetFullDepthChart()
+        public IDictionary<string, List<Player>> GetFullDepthChart()
             => _repository.GetFullDepthChart();
 
-        public IEnumerable<Player> RemovePlayerFromDepthChart(NflPosition position, Player player)
+        public IEnumerable<Player> RemovePlayerFromDepthChart(string position, Player player)
         {
             var positionChart = _repository.GetPositionDepthChart(position);
             if (positionChart.Count == 0)

@@ -27,7 +27,7 @@ namespace TradingSolutions.Controllers.V1
         [HttpPut]
         public ActionResult AddPlayerToDepthChart([FromBody] AddNflPlayerRequest request)
         {
-            var result = _playerProcessor.AddPlayerToDepthChart(request);
+            var result = _playerProcessor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
             if (!result.IsValid)
             {
                 return BadRequest(result.ErrorDetails);
@@ -35,38 +35,34 @@ namespace TradingSolutions.Controllers.V1
             return Ok();
         }
 
-        [HttpPut("Position/{position}")]
-        public ActionResult AddPlayersToDepthChart(NflPosition position, [FromBody] IEnumerable<AddNflPlayerRequest> players)
+        [HttpGet]
+        public IDictionary<string, List<Player>> GetFullDepthChart()
         {
-            _playerProcessor.AddPlayersToDepthChart(position, players);
-            return Ok();
-        }
-
-        [HttpDelete]
-        public ActionResult<IEnumerable<Player>> RemovePlayerFromDepthChart([FromBody] RemoveNflPlayerRequest request)
-        {
-            var playerList = _playerProcessor.RemovePlayerToDepthChart(request.Position, request.Player);
-            return Ok(playerList);
+            var depthChart = _playerProcessor.GetFullDepthChart();
+            return depthChart;
         }
 
         [HttpGet("backups/position/{position}")]
-        public ActionResult<IEnumerable<Player>> GetBackups(int position, [FromQuery] int playerNumber, [FromQuery] string playerName)
+        public ActionResult<IEnumerable<Player>> GetBackups(string position, [FromQuery] int playerNumber, [FromQuery] string playerName)
         {
-            if (string.IsNullOrEmpty(playerName) || playerNumber < 0) return BadRequest();
+            if (!Enum.IsDefined(typeof(NflPosition), position)) return BadRequest("Invalid position provided");
+            if (string.IsNullOrEmpty(playerName)) return BadRequest("Please provide a valid player name");
+            if (playerNumber < 0) return BadRequest("Please provide a valid player number");
             var player = new Player
             {
                 Name = playerName,
                 Number = playerNumber
             };
-            var backups = _playerProcessor.GetBackups((NflPosition)position, player);
+            var backups = _playerProcessor.GetBackups(position, player);
             return Ok(backups);
         }
 
-        [HttpGet]
-        public IDictionary<NflPosition, List<Player>> GetFullDepthChart()
+        [HttpDelete]
+        public ActionResult<IEnumerable<Player>> RemovePlayerFromDepthChart([FromBody] RemoveNflPlayerRequest request)
         {
-            var depthChart = _playerProcessor.GetFullDepthChart();
-            return depthChart;
+            var playerList = _playerProcessor.RemovePlayerFromDepthChart(request.Position, request.Player);
+            return Ok(playerList);
         }
+
     }
 }

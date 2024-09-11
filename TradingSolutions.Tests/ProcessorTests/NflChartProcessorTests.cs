@@ -1,6 +1,7 @@
 ﻿using Moq;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +16,13 @@ namespace TradingSolutions.Tests.ProcessorTests
 {
     public class NflChartProcessorTests
     {
-        private readonly NflPosition _position = NflPosition.QB;
+        private readonly string _position = NflPosition.QB.ToString();
 
         [Fact]
         public void AddPlayerToDepthChart_DoesNotExist_InvalidPositionDepth_ReturnError()
         {
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>());
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>());
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var request = new AddNflPlayerRequest
@@ -34,18 +35,18 @@ namespace TradingSolutions.Tests.ProcessorTests
                 },
                 PositionDepth = 1
             };
-            var result = processor.AddPlayerToDepthChart(request);
+            var result = processor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
             Assert.False(result.IsSuccess);
             Assert.False(result.IsValid);
-            mockRepository.Verify(x => x.AddPlayer(It.IsAny<NflPosition>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
-            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<NflPosition>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
+            mockRepository.Verify(x => x.AddPlayer(It.IsAny<string>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
+            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
         }
 
         [Fact]
         public void AddPlayerToDepthChart_DoesNotExist_ValidPositionDepth_SuccessfullyAdded()
         {
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>());
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>());
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var request = new AddNflPlayerRequest
@@ -58,9 +59,9 @@ namespace TradingSolutions.Tests.ProcessorTests
                 },
                 PositionDepth = 0
             };
-            var result = processor.AddPlayerToDepthChart(request);
-            mockRepository.Verify(x => x.AddPlayer(It.IsAny<NflPosition>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Once);
-            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<NflPosition>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
+            var result = processor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
+            mockRepository.Verify(x => x.AddPlayer(It.IsAny<string>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Once);
+            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
             Assert.True(result.IsSuccess);
             Assert.True(result.IsValid);
         }
@@ -74,7 +75,7 @@ namespace TradingSolutions.Tests.ProcessorTests
                 Number = 12
             };
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player> { player });
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player> { player });
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var request = new AddNflPlayerRequest
@@ -83,9 +84,9 @@ namespace TradingSolutions.Tests.ProcessorTests
                 Player = player,
                 PositionDepth = 0
             };
-            var result = processor.AddPlayerToDepthChart(request);
-            mockRepository.Verify(x => x.AddPlayer(It.IsAny<NflPosition>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
-            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<NflPosition>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
+            var result = processor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
+            mockRepository.Verify(x => x.AddPlayer(It.IsAny<string>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
+            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
             Assert.True(result.IsSuccess);
             Assert.True(result.IsValid);
         }
@@ -99,7 +100,7 @@ namespace TradingSolutions.Tests.ProcessorTests
                 Number = 12
             };
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player> { player });
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player> { player });
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var request = new AddNflPlayerRequest
@@ -108,9 +109,9 @@ namespace TradingSolutions.Tests.ProcessorTests
                 Player = player,
                 PositionDepth = 1
             };
-            var result = processor.AddPlayerToDepthChart(request);
-            mockRepository.Verify(x => x.AddPlayer(It.IsAny<NflPosition>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
-            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<NflPosition>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
+            var result = processor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
+            mockRepository.Verify(x => x.AddPlayer(It.IsAny<string>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
+            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Never);
             Assert.False(result.IsSuccess);
             Assert.False(result.IsValid);
         }
@@ -131,7 +132,7 @@ namespace TradingSolutions.Tests.ProcessorTests
             };
 
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player> { player1, player2 });
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player> { player1, player2 });
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var request = new AddNflPlayerRequest
@@ -140,9 +141,9 @@ namespace TradingSolutions.Tests.ProcessorTests
                 Player = player1,
                 PositionDepth = 1
             };
-            var result = processor.AddPlayerToDepthChart(request);
-            mockRepository.Verify(x => x.AddPlayer(It.IsAny<NflPosition>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
-            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<NflPosition>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Once);
+            var result = processor.AddPlayerToDepthChart(request.Position, request.Player, request.PositionDepth);
+            mockRepository.Verify(x => x.AddPlayer(It.IsAny<string>(), It.IsAny<Player>(), It.IsAny<int>()), Times.Never);
+            mockRepository.Verify(x => x.MovePlayerPosition(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Player>()), Times.Once);
             Assert.True(result.IsSuccess);
             Assert.True(result.IsValid);
         }
@@ -151,7 +152,7 @@ namespace TradingSolutions.Tests.ProcessorTests
         public void GetBackups_EmptyPositionChart_ReturnEmptyList()
         {
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>());
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>());
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var backups = processor.GetBackups(_position, new Player());
@@ -173,7 +174,7 @@ namespace TradingSolutions.Tests.ProcessorTests
             };
 
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>() { player1 });
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>() { player1 });
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var backups = processor.GetBackups(_position, player2);
@@ -201,7 +202,7 @@ namespace TradingSolutions.Tests.ProcessorTests
             };
 
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>() { player1, player2, player3 });
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>() { player1, player2, player3 });
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var backups = processor.GetBackups(_position, player1);
@@ -223,7 +224,7 @@ namespace TradingSolutions.Tests.ProcessorTests
         public void GetFullDepthChart_EmptyDepthChart_ReturnEmptyList()
         {
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetFullDepthChart()).Returns(new Dictionary<NflPosition, List<Player>>());
+            mockRepository.Setup(x => x.GetFullDepthChart()).Returns(new ConcurrentDictionary<string, List<Player>>());
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var depthChart = processor.GetFullDepthChart();
@@ -241,14 +242,18 @@ namespace TradingSolutions.Tests.ProcessorTests
             var qbList = new List<Player> { qbPlayer1, qbPlayer2 };
             var lwrList = new List<Player> { lwrPlayer1, lwrPlayer2 };
 
+            var dict = new ConcurrentDictionary<string, List<Player>>();
+            dict.TryAdd(NflPosition.QB.ToString(), qbList);
+            dict.TryAdd(NflPosition.LWR.ToString(), lwrList);
+
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetFullDepthChart()).Returns(new Dictionary<NflPosition, List<Player>>() { { NflPosition.QB, qbList }, { NflPosition.LWR, lwrList } });
+            mockRepository.Setup(x => x.GetFullDepthChart()).Returns(dict);
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var depthChart = processor.GetFullDepthChart();
             Assert.NotEmpty(depthChart);
 
-            var qbChart = depthChart[NflPosition.QB];
+            var qbChart = depthChart[NflPosition.QB.ToString()];
             Assert.NotEmpty(qbChart);
             Assert.Equal(2, qbChart.Count);
             Assert.Equal(qbPlayer1.Name, qbChart[0].Name);
@@ -256,7 +261,7 @@ namespace TradingSolutions.Tests.ProcessorTests
             Assert.Equal(qbPlayer2.Name, qbChart[1].Name);
             Assert.Equal(qbPlayer2.Number, qbChart[1].Number);
 
-            var lwrChart = depthChart[NflPosition.LWR];
+            var lwrChart = depthChart[NflPosition.LWR.ToString()];
             Assert.NotEmpty(lwrChart);
             Assert.Equal(2, lwrChart.Count);
             Assert.Equal(lwrPlayer1.Name, lwrChart[0].Name);
@@ -270,12 +275,12 @@ namespace TradingSolutions.Tests.ProcessorTests
         {
             var player1 = new Player { Name = "Tom Brady", Number = 12 };
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>());
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>());
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var depthChart = processor.RemovePlayerFromDepthChart(_position, player1);
             Assert.Empty(depthChart);
-            mockRepository.Verify(x => x.RemovePlayer(It.IsAny<NflPosition>(), It.IsAny<Player>()), Times.Never);
+            mockRepository.Verify(x => x.RemovePlayer(It.IsAny<string>(), It.IsAny<Player>()), Times.Never);
         }
 
         [Fact]
@@ -283,13 +288,13 @@ namespace TradingSolutions.Tests.ProcessorTests
         {
             var player1 = new Player { Name = "Tom Brady", Number = 12 };
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>() { player1 });
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>() { player1 });
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var player2 = new Player { Name = "Blaine", Number = 11 };
             var depthChart = processor.RemovePlayerFromDepthChart(_position, player2);
             Assert.Empty(depthChart);
-            mockRepository.Verify(x => x.RemovePlayer(It.IsAny<NflPosition>(), It.IsAny<Player>()), Times.Never);
+            mockRepository.Verify(x => x.RemovePlayer(It.IsAny<string>(), It.IsAny<Player>()), Times.Never);
         }
 
         [Fact]
@@ -297,7 +302,7 @@ namespace TradingSolutions.Tests.ProcessorTests
         {
             var player1 = new Player { Name = "Tom Brady", Number = 12 };
             var mockRepository = new Mock<INflDepthChartRepository>();
-            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<NflPosition>())).Returns(new List<Player>() { player1 });
+            mockRepository.Setup(x => x.GetPositionDepthChart(It.IsAny<string>())).Returns(new List<Player>() { player1 });
             var processor = new NflChartProcessor(mockRepository.Object);
 
             var depthChart = processor.RemovePlayerFromDepthChart(_position, player1);
@@ -307,7 +312,7 @@ namespace TradingSolutions.Tests.ProcessorTests
 
             Assert.Equal(player1.Name, removedPlayer.Name);
             Assert.Equal(player1.Number, removedPlayer.Number);
-            mockRepository.Verify(x => x.RemovePlayer(It.IsAny<NflPosition>(), It.IsAny<Player>()), Times.Once);
+            mockRepository.Verify(x => x.RemovePlayer(It.IsAny<string>(), It.IsAny<Player>()), Times.Once);
         }
     }
 }

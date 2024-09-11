@@ -16,7 +16,7 @@ namespace TradingSolutions.Tests.RepositoryTests
         [Fact]
         public void AddPlayer_AddToEnd()
         {
-            var position = NflPosition.QB;
+            var position = NflPosition.QB.ToString();
             var repository = new NflDepthChartRepository();
             var player0 = new Player()
             {
@@ -51,7 +51,7 @@ namespace TradingSolutions.Tests.RepositoryTests
         [Fact]
         public void AddPlayer_AddAtIndex()
         {
-            var position = NflPosition.QB;
+            var position = NflPosition.QB.ToString();
             var repository = new NflDepthChartRepository();
             var player0 = new Player()
             {
@@ -97,7 +97,7 @@ namespace TradingSolutions.Tests.RepositoryTests
         [Fact]
         public void MovePlayerPosition_MoveToEnd()
         {
-            var position = NflPosition.QB;
+            var position = NflPosition.QB.ToString();
             var repository = new NflDepthChartRepository();
             var player0 = new Player() { Name = "Tom", Number = 13 };
             var player1 = new Player() { Name = "Blaine", Number = 2 };
@@ -127,7 +127,7 @@ namespace TradingSolutions.Tests.RepositoryTests
         [Fact]
         public void MovePlayerPosition_MoveToIndex()
         {
-            var position = NflPosition.QB;
+            var position = NflPosition.QB.ToString();
             var repository = new NflDepthChartRepository();
             var player0 = new Player() { Name = "Tom", Number = 13 };
             var player1 = new Player() { Name = "Blaine", Number = 2 };
@@ -178,8 +178,8 @@ namespace TradingSolutions.Tests.RepositoryTests
         [Fact]
         public void GetFullDepthChart_MultipleDepthCharts_ReturnList()
         {
-            var qbPosition = NflPosition.QB;
-            var lwrPosition = NflPosition.LWR;
+            var qbPosition = NflPosition.QB.ToString();
+            var lwrPosition = NflPosition.LWR.ToString();
             var repository = new NflDepthChartRepository();
 
             var qbPlayer1 = new Player { Name = "Tom Brady", Number = 12 };
@@ -197,13 +197,13 @@ namespace TradingSolutions.Tests.RepositoryTests
             var depthChart = repository.GetFullDepthChart();
             Assert.NotEmpty(depthChart);
 
-            var chart = depthChart[NflPosition.QB];
+            var chart = depthChart[NflPosition.QB.ToString()];
             Assert.NotEmpty(chart);
             Assert.Equal(2, chart.Count);
             Assert.Equal(qbPlayer1, chart[0]);
             Assert.Equal(qbPlayer2, chart[1]);
 
-            chart = depthChart[NflPosition.LWR];
+            chart = depthChart[NflPosition.LWR.ToString()];
             Assert.NotEmpty(chart);
             Assert.Equal(2, chart.Count);
             Assert.Equal(lwrPlayer1, chart[0]);
@@ -213,7 +213,7 @@ namespace TradingSolutions.Tests.RepositoryTests
         [Fact]
         public void RemovePlayer_PlayerRemoved()
         {
-            var position = NflPosition.QB;
+            var position = NflPosition.QB.ToString();
             var repository = new NflDepthChartRepository();
             var player0 = new Player() { Name = "Tom", Number = 13 };
             var player1 = new Player() { Name = "Blaine", Number = 2 };
@@ -229,7 +229,7 @@ namespace TradingSolutions.Tests.RepositoryTests
 
             repository.RemovePlayer(position, player0);
             Assert.Equal(3, chart.Count);
-            Assert.Equal(-1, chart.IndexOf(player0));
+            Assert.Equal(-1, chart.FindIndex(x => x.Number == player0.Number));
         }
     }
 }

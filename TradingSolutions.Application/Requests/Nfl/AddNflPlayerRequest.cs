@@ -16,7 +16,7 @@ namespace TradingSolutions.Application.Requests.Nfl
         public AddNflPlayerRequestValidator()
         {
             RuleFor(x => x.Player).SetValidator(new PlayerValidator());
-            RuleFor(x => x.Position).IsEnumName(typeof(NflPosition)).WithMessage("Invalid Position");
+            RuleFor(x => x.Position).NotEmpty().IsEnumName(typeof(NflPosition)).WithMessage("Invalid Position");
         }
     }
 }
