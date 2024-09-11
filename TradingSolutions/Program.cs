@@ -1,13 +1,18 @@
 using Asp.Versioning;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using TradingSolutions;
 using TradingSolutions.Application.Processors;
 using TradingSolutions.Application.Repositories;
+using TradingSolutions.Application.Requests.Nfl;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddTransient<INflChartProcessor, NflChartProcessor>(); //todo check this lifetime
+builder.Services.AddFluentValidationAutoValidation()
+                .AddValidatorsFromAssemblyContaining<AddNflPlayerRequestValidator>();
+builder.Services.AddTransient<INflChartProcessor, NflChartProcessor>();
 builder.Services.AddSingleton<INflDepthChartRepository, NflDepthChartRepository>();
 builder.Services.AddControllers();
 builder.Services.AddApiVersioning(options =>
@@ -20,7 +25,8 @@ builder.Services.AddApiVersioning(options =>
     options.SubstituteApiVersionInUrl = true;
     options.GroupNameFormat = "'v'VVV";
 });
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen()
+                .AddFluentValidationRulesToSwagger();
 
 var app = builder.Build();
 
